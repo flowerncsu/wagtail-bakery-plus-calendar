@@ -172,7 +172,9 @@ BOWER_COMPONENTS_ROOT = PROJECT_ROOT + '/components/'
 BOWER_INSTALLED_APPS = (
     'jquery',
     'jquery-ui',
-    'bootstrap'
+    'bootstrap',
+    'moment',
+    'fullcalendar',
 )
 
 # Override in local settings or replace with your own key. Please don't use our demo key in production!

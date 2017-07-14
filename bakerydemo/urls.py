@@ -7,6 +7,7 @@ from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 
 from bakerydemo.search import views as search_views
+from bakerydemo.events import views as events_views
 
 from wagtail.contrib.wagtailapi import urls as wagtailapi_urls
 
@@ -19,6 +20,7 @@ urlpatterns = [
     url(r'^search/$', search_views.search, name='search'),
     url(r'^api/', include(wagtailapi_urls)),
 
+    url(r'^schedule/', events_views.ScheduleView.as_view()),
 ]
 
 
