@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'modelcluster',
     'taggit',
     'wagtailfontawesome',
+    'schedule',
 
     'schedule',
     'djangobower',
