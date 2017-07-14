@@ -1,5 +1,11 @@
-from django.db import models
+import datetime
 
+from django.db import models
+from django.contrib.auth.models import User
+
+from schedule.models.events import Event
+
+from wagtail.wagtailcore.signals import page_published, page_unpublished
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailadmin.edit_handlers import (
@@ -53,10 +59,20 @@ class EventDetailPage(Page):
         related_name='+',
         help_text='Landscape mode only; horizontal width between 1000px and 3000px.'
     )
-    datetime = models.DateTimeField()
+    event_time = models.DateTimeField()
+
+    duration = models.DurationField(
+        default=datetime.timedelta(hours=1)
+    )
+
+    creator = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+    )
 
     content_panels = Page.content_panels + [
-        FieldPanel('datetime', classname="full"),
+        FieldPanel('event_time', classname="full"),
         FieldPanel('introduction', classname="full"),
         ImageChooserPanel('image'),
         StreamFieldPanel('body'),
@@ -66,3 +82,52 @@ class EventDetailPage(Page):
         index.SearchField('body'),
     ]
     parent_page_types = ['EventIndexPage']
+    event_object = models.ForeignKey(
+        'schedule.Event',
+        null=True,
+        blank=True,
+    )
+
+
+###########
+# Signals #
+###########
+
+def create_or_update_event(sender, **kwargs):
+    instance = kwargs['instance']
+
+    if not instance.event_object:
+        instance.event_object = Event()
+        new_event = True
+    else:
+        new_event = False
+
+    if not instance.creator:
+        instance.event_object.creator = User.objects.get(username='admin')
+    else:
+        instance.event_object.creator = instance.creator
+
+    instance.event_object.description = instance.introduction
+    instance.event_object.start = instance.event_time
+    instance.event_object.end = instance.event_time + instance.duration
+    instance.event_object.title = instance.title
+    instance.event_object.creator = instance.creator
+
+    instance.event_object.save()
+    if new_event:
+        # Save the reference to the Event object; must happen after Event object is saved
+        instance.save()
+
+
+def delete_unused_event(sender, **kwargs):
+    """
+    When an event is unpublished, we can delete its event_object, since event_objects do not store any information
+    besides that which is contained in the EventDetailPage object.
+    """
+    instance = kwargs['instance']
+    if instance.event_object:
+        instance.event_object.delete()
+
+print('running signal code')
+page_published.connect(create_or_update_event, sender=EventDetailPage)
+page_unpublished.connect(delete_unused_event, sender=EventDetailPage)
