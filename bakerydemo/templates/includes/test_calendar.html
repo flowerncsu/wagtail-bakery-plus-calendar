@@ -1,0 +1,40 @@
+{% load staticfiles %}
+
+<script type='text/javascript' src="{% static 'jquery/dist/jquery.js' %}"></script>
+<script type='text/javascript' src="{% static 'jquery-ui/jquery-ui.js' %}"></script>
+
+<link rel='stylesheet' type='text/css' href="{% static 'fullcalendar/dist/fullcalendar.css' %}" />
+<script type='text/javascript' src="{% static 'moment/moment.js' %}"></script>
+<script type='text/javascript' src="{% static 'js/fullcalendar_other.js' %}"></script>
+
+
+
+
+<div id="calendar" style="width: 50%;"></div>
+<script type='text/javascript'>
+$(document).ready(function() {
+
+    // Get the events from the page for now. We can do an API call later.
+    var eventsOnPage = $('.each-event');
+    var events = [];
+    for (var i=0; i<eventsOnPage.length; i++) {
+      var newObj = {};
+      newObj['id'] = eventsOnPage[i].getAttribute('id');
+      newObj['title'] = eventsOnPage[i].getAttribute('data-title');
+      newObj['start'] = eventsOnPage[i].getAttribute('data-start');
+      newObj['end'] = eventsOnPage[i].getAttribute('data-end');
+      events.push(newObj);
+    }
+
+    // page is now ready, initialize the calendar...
+    $('#calendar').fullCalendar({
+      events: events,
+      // weekends: false,
+      // firstDay: 1,
+      dayClick: function() {
+        alert('a day has been clicked!');
+      },
+    })
+
+});
+</script>
