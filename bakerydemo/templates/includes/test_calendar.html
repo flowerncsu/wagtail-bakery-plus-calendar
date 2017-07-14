@@ -23,6 +23,7 @@ $(document).ready(function() {
       newObj['title'] = eventsOnPage[i].getAttribute('data-title');
       newObj['start'] = eventsOnPage[i].getAttribute('data-start');
       newObj['end'] = eventsOnPage[i].getAttribute('data-end');
+      newObj['url'] = eventsOnPage[i].getAttribute('data-url');
       events.push(newObj);
     }
 
