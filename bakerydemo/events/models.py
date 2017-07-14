@@ -73,6 +73,7 @@ class EventDetailPage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('event_time', classname="full"),
+        FieldPanel('duration', classname="full"),
         FieldPanel('introduction', classname="full"),
         ImageChooserPanel('image'),
         StreamFieldPanel('body'),
@@ -87,6 +88,10 @@ class EventDetailPage(Page):
         null=True,
         blank=True,
     )
+
+    @property
+    def event_end_time(self):
+        return self.event_time + self.duration
 
 
 ###########
