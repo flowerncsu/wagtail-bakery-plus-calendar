@@ -24,6 +24,18 @@ class EventIndexPage(Page):
         help_text='Landscape mode only; horizontal width between 1000px and 3000px.'
     )
 
+    def get_events(self):
+        """
+        Return most recent live EventDetailPages that are direct descendants of EventIndexPage.
+        """
+        return EventDetailPage.objects.live().descendant_of(
+            self).order_by('-first_published_at')
+
+    def get_context(self, request):
+        context = super(EventIndexPage, self).get_context(request)
+        context['events'] = self.get_events()
+        return context
+
 
 class EventDetailPage(Page):
     introduction = models.TextField(
